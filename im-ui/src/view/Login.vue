@@ -1,24 +1,28 @@
 <template>
-	<div class="login-view"  >
-			<el-form :model="loginForm"  status-icon :rules="rules" ref="loginForm"  label-width="60px" class="web-ruleForm" @keyup.enter.native="submitForm('loginForm')">
-				<div class="login-brand">欢迎登陆</div>
-				<el-form-item label="用户名" prop="username">
-					<el-input type="username" v-model="loginForm.username" autocomplete="off"></el-input>
-
-				</el-form-item>
-				<el-form-item label="密码" prop="password">
-					<el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="submitForm('loginForm')">登陆</el-button>
-					<el-button @click="resetForm('loginForm')">清空</el-button>
-				</el-form-item>
-				<div class="register">
-					<router-link to="/register">没有账号,前往注册</router-link>
-				</div>
-			</el-form>
-			
-	</div>
+		<el-row type="flex" justify="center" class="login-container">
+			<el-col :span="6">
+				<el-card class="login-card" shadow="always">
+					<div slot="header" class="login-brand" style="font-style: italic;font-size: 30px; margin: 5px;">欢迎登录</div>
+					<el-form :model="loginForm"  status-icon :rules="rules" ref="loginForm"  label-width="60px" class="web-ruleForm" @keyup.enter.native="submitForm('loginForm')">
+						<el-form-item prop="username" class="form-item">
+							<span style="font-size: larger;">用户名：</span>
+							<el-input type="username" v-model="loginForm.username" autocomplete="off"></el-input>
+						</el-form-item>
+						<el-form-item prop="password" class="form-item">
+							<span style="font-size: larger;">密码：</span>
+							<el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
+						</el-form-item>
+						<el-form-item class="form-button">
+							<el-button type="primary" @click="submitForm('loginForm')">登陆</el-button>
+							<el-button @click="resetForm('loginForm')">清空</el-button>
+						</el-form-item >
+						<div class="register">
+							<router-link to="/register">没有账号,前往注册</router-link>
+						</div>
+					</el-form>
+				</el-card>
+			</el-col>
+		</el-row>
 </template>
 
 <script>
@@ -113,44 +117,30 @@
 </script>
 
 <style scoped lang="scss">
-	.login-view {
-		position: relative;
-		display: flex;
-		justify-content: space-around;
-		width: 100%;
-		height: 100%;
-		background:  linear-gradient(#65807a, #182e3c); 
-		background-size: cover;
-		
+.login-container{
+	background:  linear-gradient(#c1fcf5, #124d4d); 
+	background-size: cover;
+	height: 100%;
+	.login-card {
+		margin-top: 6vw;
+		border-radius: 0px 70px;
 		.web-ruleForm {
-			height: 340px;
-			padding: 20px;
-			margin-top: 150px ;
-			background: rgba(255,255,255,.75);
-			box-shadow: 0px 0px  1px #ccc;
-			border-radius: 5px;
+			height: 400px;
+			padding: 5px;
 			overflow: hidden;
-	
-			
-			.login-brand {
-				line-height: 50px;
-				margin: 30px 0 40px 0;
-				font-size: 22px;
-				font-weight: 600;
-				letter-spacing: 2px;
-				text-transform: uppercase;
-				text-align: center;
+			.form-item{
+				margin-right: 40px;
+				margin-top: 30px;
 			}
-			
-			.register {
-				display: flex;
-				flex-direction: row-reverse;
-				line-height: 40px;
-				text-align: left;
-				padding-left: 20px;
+			.form-button{
+				margin-left: 180px;
+				margin-top: 50px;
+			}
+			.register{
+				margin-left: 250px;
+				margin-top: 40px;
 			}
 		}
 	}
-
-	
+}
 </style>

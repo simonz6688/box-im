@@ -19,8 +19,10 @@ public enum ResultCode {
     VERITY_CODE_ERROR(10003,"验证码不正确"),
     USERNAME_ALREADY_REGISTER(10004,"该用户名已注册"),
     MOBILE_ALREADY_REGISTER(10005,"该手机号码已注册"),
+    TOKEN_INVALID_OR_EXPIRED(10006,"token无效或已过期")
     ;
 
+    //TODO 整理一下返回码，统一格式
 
     private int code;
     private String msg;

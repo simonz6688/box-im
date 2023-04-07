@@ -1,28 +1,28 @@
 <template>
-		<el-row type="flex" justify="center" class="login-container">
-			<el-col :span="6">
-				<el-card class="login-card" shadow="always">
-					<div slot="header" class="login-brand" style="font-style: italic;font-size: 30px; margin: 5px;">欢迎登录</div>
-					<el-form :model="loginForm"  status-icon :rules="rules" ref="loginForm"  label-width="60px" class="web-ruleForm" @keyup.enter.native="submitForm('loginForm')">
-						<el-form-item prop="username" class="form-item">
-							<span style="font-size: larger;">用户名：</span>
-							<el-input type="username" v-model="loginForm.username" autocomplete="off"></el-input>
-						</el-form-item>
-						<el-form-item prop="password" class="form-item">
-							<span style="font-size: larger;">密码：</span>
-							<el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
-						</el-form-item>
-						<el-form-item class="form-button">
-							<el-button type="primary" @click="submitForm('loginForm')">登陆</el-button>
-							<el-button @click="resetForm('loginForm')">清空</el-button>
-						</el-form-item >
-						<div class="register">
-							<router-link to="/register">没有账号,前往注册</router-link>
-						</div>
-					</el-form>
-				</el-card>
-			</el-col>
-		</el-row>
+	<el-row type="flex" justify="center" class="login-container">
+		<el-col :span="6">
+			<el-card class="login-card" shadow="always">
+				<div slot="header" style="font-style: italic;font-size: 30px; margin: 5px;">欢迎登录</div>
+				<el-form :model="loginForm"  status-icon :rules="rules" ref="loginForm"  label-width="60px" class="web-ruleForm" @keyup.enter.native="submitForm('loginForm')">
+					<el-form-item prop="username" class="form-item">
+						<span style="font-size: larger;">用户名：</span>
+						<el-input type="username" v-model="loginForm.username" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item prop="password" class="form-item">
+						<span style="font-size: larger;">密码：</span>
+						<el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item class="form-button">
+						<el-button type="primary" @click="submitForm('loginForm')">登陆</el-button>
+						<el-button @click="resetForm('loginForm')">清空</el-button>
+					</el-form-item >
+					<div class="register">
+						<router-link to="/register">没有账号,前往注册</router-link>
+					</div>
+				</el-form>
+			</el-card>
+		</el-col>
+	</el-row>
 </template>
 
 <script>
@@ -70,9 +70,11 @@
 								method: 'post',
 								params: this.loginForm
 							})
-							.then((data) => {
-								this.setCookie('username',this.loginForm.username);
-								this.setCookie('password',this.loginForm.password);
+							.then((res) => {
+								//console.log(res.data)
+								//this.setCookie('username',this.loginForm.username);
+								//this.setCookie('password',this.loginForm.password);
+								localStorage.setItem("token",res.data)
 								this.$message.success("登陆成功");
 								this.$router.push("/home/chat");
 							})
@@ -112,6 +114,17 @@
 			this.loginForm.username = this.getCookie("username");
 			// cookie存密码并不安全，暂时是为了方便
 			this.loginForm.password = this.getCookie("password");
+			let token = localStorage.getItem("token")
+			//console.log(token)
+			this.$http({
+				url:"/login/token",
+				method:"get",
+				headers:{Authorization:token}
+			}).then((res)=>{
+				if(res.code==200){
+					this.$router.push('/home/chat')
+				}
+			})
 		}
 	}
 </script>

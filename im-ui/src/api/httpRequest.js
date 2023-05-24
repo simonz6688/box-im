@@ -26,7 +26,7 @@ http.interceptors.request.use(config => {
  */
 http.interceptors.response.use(response => {
 	if (response.data.code == 200) {
-		return response.data.data;
+		return response.data;
 	} else {
 		Message({
 			message: response.data.message,
@@ -76,6 +76,14 @@ http.interceptors.response.use(response => {
 				type: 'error',
 				duration: 1500,
 				customClass: 'element-error-message-zindex'
+			})
+			break
+		case 10006:
+			Message({
+				message: 'token无效或已过期',
+				type: 'error',
+				duration: 1500,
+				cumtomClass: 'element-error-message-zindex'
 			})
 			break
 	}

@@ -7,11 +7,14 @@ import com.bx.implatform.result.ResultUtils;
 import com.bx.implatform.service.IUserService;
 import com.bx.implatform.session.UserSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import cn.hutool.core.lang.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -25,9 +28,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.Cookie;
 
 /*
  * SpringSecurity安全框架配置
@@ -41,19 +48,23 @@ import java.io.PrintWriter;
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
 
-
+    @Autowired
+    RedisTemplate<String,String> redisTemplate;
 
     @Qualifier("securityUserDetailsServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-    private IUserService userService;
+    @Bean
+    public TokenAuthenticFilter getTokenAuthenticFilter(){
+        return new TokenAuthenticFilter();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-            .antMatchers("/image/upload","/login","/logout","/register","/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**")
+        http.addFilterBefore(getTokenAuthenticFilter(), UsernamePasswordAuthenticationFilter.class)
+            .authorizeRequests()
+            .antMatchers("/image/upload","/logout","/register","/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**")
             .permitAll()
             .anyRequest() //任何其它请求
             .authenticated() //都需要身份认证
@@ -65,6 +76,7 @@ public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
             .loginProcessingUrl("/login")//配置默认登录入口
             .successHandler(successHandler())
             .failureHandler(failureHandler())
+            .permitAll()
             .and()
             // 注销
             .logout()
@@ -78,9 +90,8 @@ public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
             // 禁用跨站csrf攻击防御
             .csrf()
             .disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(entryPoint());
-
+            .exceptionHandling()
+            .authenticationEntryPoint(entryPoint());
     }
 
     @Bean
@@ -88,7 +99,7 @@ public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
         return (request, response, exception) -> {
             response.setContentType("application/json;charset=utf-8");
             PrintWriter out = response.getWriter();
-            Result result = ResultUtils.error(ResultCode.LOGIN_ERROR,exception.getMessage());
+            Result<Void> result = ResultUtils.error(ResultCode.LOGIN_ERROR,exception.getMessage());
             if (exception instanceof LockedException) {
                 result =ResultUtils.error(ResultCode.LOGIN_ERROR,"账户被锁定，请联系管理员!");
             } else if (exception instanceof CredentialsExpiredException) {
@@ -113,14 +124,17 @@ public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
             String strJson = useDetail.getUsername();
             UserSession userSession = JSON.parseObject(strJson,UserSession.class);
             log.info("用户 '{}' 登录,id:{},昵称:{}",userSession.getUserName(),userSession.getId(),userSession.getNickName());
+            // 生成token
+            String token = UUID.randomUUID().toString();
+            //键为token,值为userSession的json string,有效期为15天
+            redisTemplate.opsForValue().set(token,JSON.toJSONString(userSession),15,TimeUnit.DAYS);
             // 响应
             response.setContentType("application/json;charset=utf-8");
             PrintWriter out = response.getWriter();
-            Result result = ResultUtils.success();
+            Result<String> result = new Result<>(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getMsg(), token);
             out.write(new ObjectMapper().writeValueAsString(result));
             out.flush();
             out.close();
-
         };
     }
 
@@ -135,7 +149,7 @@ public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
             // 响应
             response.setContentType("application/json;charset=utf-8");
             PrintWriter out = response.getWriter();
-            Result result = ResultUtils.success();
+            Result<Void> result = ResultUtils.success();
             out.write(new ObjectMapper().writeValueAsString(result));
             out.flush();
             out.close();
@@ -147,7 +161,7 @@ public class WebSecurityConfg extends WebSecurityConfigurerAdapter {
         return (request, response, exception) -> {
             response.setContentType("application/json;charset=utf-8");
             PrintWriter out = response.getWriter();
-            Result result = ResultUtils.error(ResultCode.NO_LOGIN);
+            Result<Void> result = ResultUtils.error(ResultCode.NO_LOGIN);
             out.write(new ObjectMapper().writeValueAsString(result));
             out.flush();
             out.close();

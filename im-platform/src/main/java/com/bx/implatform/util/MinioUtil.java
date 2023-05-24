@@ -29,6 +29,7 @@ public class MinioUtil {
         try {
             found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
         } catch (Exception e) {
+            System.out.println(e.getClass().getName()+e.getMessage());
             log.error("查询bucket失败",e);
             return false;
         }

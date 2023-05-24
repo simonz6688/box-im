@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 
-@Slf4j
 @EnableAspectJAutoProxy(exposeProxy = true)
 @MapperScan(basePackages = {"com.bx.implatform.mapper"})
 @SpringBootApplication

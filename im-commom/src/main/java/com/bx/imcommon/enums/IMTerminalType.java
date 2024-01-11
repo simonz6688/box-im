@@ -16,7 +16,11 @@ public enum IMTerminalType {
     /**
      * app
      */
-    APP(1, "app");
+    APP(1, "app"),
+    /**
+     * PC桌面端
+     */
+    PC(1, "pc");
 
     private final Integer code;
 

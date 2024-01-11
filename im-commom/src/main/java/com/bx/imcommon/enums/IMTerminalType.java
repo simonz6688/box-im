@@ -20,7 +20,7 @@ public enum IMTerminalType {
     /**
      * PC桌面端
      */
-    PC(1, "pc");
+    PC(2, "pc");
 
     private final Integer code;
 

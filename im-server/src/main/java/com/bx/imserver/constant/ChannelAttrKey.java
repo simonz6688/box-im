@@ -18,4 +18,6 @@ public final class ChannelAttrKey {
      */
     public static final String HEARTBEAT_TIMES = "HEARTBEAt_TIMES";
 
+    public static final String USER_TOKEN = "USER_TOKEN";
+
 }

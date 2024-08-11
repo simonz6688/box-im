@@ -2,13 +2,16 @@ package com.bx.imserver.netty;
 
 import com.bx.imcommon.contant.IMRedisKey;
 import com.bx.imcommon.enums.IMCmdType;
+import com.bx.imcommon.model.IMLoginInfo;
 import com.bx.imcommon.model.IMSendInfo;
 import com.bx.imserver.constant.ChannelAttrKey;
 import com.bx.imserver.netty.processor.AbstractMessageProcessor;
+import com.bx.imserver.netty.processor.LoginProcessor;
 import com.bx.imserver.netty.processor.ProcessorFactory;
 import com.bx.imserver.util.SpringContextHolder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
@@ -91,7 +94,12 @@ public class IMChannelHandler extends SimpleChannelInboundHandler<IMSendInfo> {
                 log.info("心跳超时，即将断开连接,用户id:{},终端类型:{} ", userId, terminal);
                 ctx.channel().close();
             }
-        } else {
+        } else if(evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) { //完成握手 校验token
+            AttributeKey<IMLoginInfo> iMLoginInfo = AttributeKey.valueOf(ChannelAttrKey.USER_TOKEN);
+            IMLoginInfo imLoginInfo = ctx.channel().attr(iMLoginInfo).get();
+            LoginProcessor loginProcessor = SpringContextHolder.getApplicationContext().getBean(LoginProcessor.class);
+            loginProcessor.process(ctx, imLoginInfo);
+        }else {
             super.userEventTriggered(ctx, evt);
         }
 

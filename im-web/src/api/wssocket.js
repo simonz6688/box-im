@@ -12,7 +12,7 @@ let connect = (wsurl,accessToken) => {
 			return;
 		}
 		console.log("连接WebSocket");
-		websock = new WebSocket(wsurl); 
+		websock = new WebSocket(wsurl + '?token=' + accessToken);
 		websock.onmessage = function(e) {
 			let sendInfo = JSON.parse(e.data)
 			if (sendInfo.cmd == 0) {	

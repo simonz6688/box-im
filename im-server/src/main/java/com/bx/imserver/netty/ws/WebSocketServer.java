@@ -65,6 +65,7 @@ public class WebSocketServer implements IMServer {
                         pipeline.addLast("http-codec", new HttpServerCodec());
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65535));
                         pipeline.addLast("http-chunked", new ChunkedWriteHandler());
+                        pipeline.addLast("authHandler", new HttpParamHandler());
                         pipeline.addLast(new WebSocketServerProtocolHandler("/im"));
                         pipeline.addLast("encode", new MessageProtocolEncoder());
                         pipeline.addLast("decode", new MessageProtocolDecoder());

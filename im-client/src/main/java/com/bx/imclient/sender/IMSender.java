@@ -64,7 +64,7 @@ public class IMSender {
             recvInfo.setData(message.getData());
             // 推送至队列
             String key = String.join(":", IMRedisKey.IM_MESSAGE_SYSTEM_QUEUE, entry.getKey().toString());
-            redisMQTemplate.opsForList().rightPush(key, recvInfo);
+            redisMQTemplate.push(key, recvInfo);
         }
         // 对离线用户回复消息状态
         if(message.getSendResult() && !offLineUsers.isEmpty()){
@@ -98,7 +98,7 @@ public class IMSender {
                     recvInfo.setSender(message.getSender());
                     recvInfo.setReceivers(Collections.singletonList(new IMUserInfo(message.getRecvId(), terminal)));
                     recvInfo.setData(message.getData());
-                    redisMQTemplate.opsForList().rightPush(sendKey, recvInfo);
+                    redisMQTemplate.push(sendKey, recvInfo);
                 } else {
                     IMSendResult result = new IMSendResult();
                     result.setSender(message.getSender());
@@ -129,7 +129,7 @@ public class IMSender {
                     recvInfo.setSender(message.getSender());
                     recvInfo.setReceivers(Collections.singletonList(new IMUserInfo(message.getSender().getId(), terminal)));
                     recvInfo.setData(message.getData());
-                    redisMQTemplate.opsForList().rightPush(sendKey, recvInfo);
+                    redisMQTemplate.push(sendKey, recvInfo);
                 }
             }
         }
@@ -176,7 +176,7 @@ public class IMSender {
             recvInfo.setData(message.getData());
             // 推送至队列
             String key = String.join(":", IMRedisKey.IM_MESSAGE_GROUP_QUEUE, entry.getKey().toString());
-            redisMQTemplate.opsForList().rightPush(key, recvInfo);
+            redisMQTemplate.push(key, recvInfo);
         }
 
         // 推送给自己的其他终端
@@ -198,7 +198,7 @@ public class IMSender {
                     recvInfo.setSendResult(false);
                     recvInfo.setData(message.getData());
                     String sendKey = String.join(":", IMRedisKey.IM_MESSAGE_GROUP_QUEUE, serverId.toString());
-                    redisMQTemplate.opsForList().rightPush(sendKey, recvInfo);
+                    redisMQTemplate.push(sendKey, recvInfo);
                 }
             }
         }

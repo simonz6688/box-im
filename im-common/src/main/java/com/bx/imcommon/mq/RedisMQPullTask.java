@@ -93,13 +93,13 @@ public class RedisMQPullTask implements CommandLineRunner {
         List<Object> objects = new LinkedList<>();
         if (redisMQTemplate.isSupportBatchPull()) {
             // 版本大于6.2，支持批量拉取
-            objects = redisMQTemplate.opsForList().leftPop(key, batchSize);
+            objects = redisMQTemplate.pull(key, batchSize);
         } else {
             // 版本小于6.2，只能逐条拉取
-            Object obj = redisMQTemplate.opsForList().leftPop(key);
+            Object obj = redisMQTemplate.pull(key);
             while (!Objects.isNull(obj) && objects.size() < batchSize) {
                 objects.add(obj);
-                obj = redisMQTemplate.opsForList().leftPop(key);
+                obj = redisMQTemplate.pull(key);
             }
             if (!Objects.isNull(obj)){
                 objects.add(obj);

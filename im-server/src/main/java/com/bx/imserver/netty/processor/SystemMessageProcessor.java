@@ -61,7 +61,7 @@ public class SystemMessageProcessor extends AbstractMessageProcessor<IMRecvInfo>
             result.setData(recvInfo.getData());
             // 推送到结果队列
             String key = StrUtil.join(":",IMRedisKey.IM_RESULT_SYSTEM_QUEUE,recvInfo.getServiceName());
-            redisMQTemplate.opsForList().rightPush(key, result);
+            redisMQTemplate.push(key, result);
         }
     }
 }

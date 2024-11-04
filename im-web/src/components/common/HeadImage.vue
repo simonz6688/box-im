@@ -1,16 +1,15 @@
 <template>
-	<div class="head-image" @click="showUserInfo($event)">
-		<img class="avatar-image" v-show="url" :src="url" 
+	<div class="head-image" @click="showUserInfo($event)" :style="{cursor : isShowUserInfo ? 'pointer': null}">
+		<img class="avatar-image" v-show="url" :src="url"
 			:style="avatarImageStyle" loading="lazy" />
 		<div class="avatar-text" v-show="!url" :style="avatarTextStyle">
-			{{name.substring(0,1).toUpperCase()}}</div>
+			{{name?.substring(0,1).toUpperCase()}}</div>
 		<div v-show="online" class="online" title="用户当前在线"></div>
 		<slot></slot>
 	</div>
 </template>
 
 <script>
-
 	export default {
 		name: "headImage",
 		data() {
@@ -26,7 +25,7 @@
 			},
 			size: {
 				type: Number,
-				default: 50
+				default: 42
 			},
 			width: {
 				type: Number
@@ -36,22 +35,27 @@
 			},
 			radius:{
 				type: String,
-				default: "10%"
+				default: "50%"
 			},
 			url: {
 				type: String
 			},
 			name:{
 				type: String,
-				default: "?"
+				default: null
 			},
 			online:{
 				type: Boolean,
 				default:false
-			}
+			},
+      isShowUserInfo: {
+        type: Boolean,
+        default: true
+      }
 		},
 		methods:{
 			showUserInfo(e){
+        if(!this.isShowUserInfo) return;
 				if(this.id && this.id>0){
 					this.$http({
 						url: `/user/find/${this.id}`,
@@ -73,9 +77,12 @@
 			avatarTextStyle() {
 				let w = this.width ? this.width : this.size;
 				let h = this.height ? this.height : this.size;
-				return `width: ${w}px;height:${h}px;
-					color:${this.textColor};font-size:${w*0.6}px;
-					border-radius: ${this.radius};`
+				return `
+				  width: ${w}px;height:${h}px;
+					color:#fff;font-size:${w*0.6}px;
+					border-radius: ${this.radius};
+					background: ${this.name ? this.textColor : '#fff'};
+					`
 			},
 			textColor(){
 				let hash = 0;
@@ -84,29 +91,31 @@
 				}
 				return this.colors[hash%this.colors.length];
 			}
-		}	
+		}
 	}
 </script>
 
 <style scoped lang="scss">
 	.head-image {
 		position: relative;
-		cursor: pointer;
+		//cursor: pointer;
+
 		.avatar-image {
 			position: relative;
 			overflow: hidden;
 			display: block;
 		}
-		
+
 		.avatar-text{
 			background-color: #f2f2f2; /* 默认背景色 */
 			border-radius: 15%; /* 圆角效果 */
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			border: 1px solid #ccc;
-		} 
-		
+			//border: 1px solid #ccc;
+      //box-shadow: var(--im-box-shadow);
+		}
+
 		.online{
 			position: absolute;
 			right: -5px;
@@ -115,7 +124,7 @@
 			height: 12px;
 			background: limegreen;
 			border-radius: 50%;
-			border: 3px solid white;
+			border: 2px solid white;
 		}
 	}
 </style>

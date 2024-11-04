@@ -1,14 +1,14 @@
 <template>
 	<div class="chat-item" :class="active ? 'active' : ''" @contextmenu.prevent="showRightMenu($event)">
 		<div class="chat-left">
-			<head-image :url="chat.headImage" :name="chat.showName" :size="45"
-				:id="chat.type=='PRIVATE'?chat.targetId:0"></head-image>
+			<head-image :url="chat.headImage" :name="chat.showName" :size="42"
+				:id="chat.type=='PRIVATE'?chat.targetId:0" :isShowUserInfo="false"></head-image>
 			<div v-show="chat.unreadCount>0" class="unread-text">{{chat.unreadCount}}</div>
 		</div>
 		<div class="chat-right">
 			<div class="chat-name">
 				<div class="chat-tag" v-if="chat.type=='GROUP'">
-					<el-tag size="mini" >群</el-tag>
+					<el-tag size="mini" effect="dark">群</el-tag>
 				</div>
 				<div class="chat-name-text">{{chat.showName}}</div>
 				<div class="chat-time-text">{{showTime}}</div>
@@ -110,34 +110,32 @@
 	.chat-item {
 		height: 50px;
 		display: flex;
-		margin-bottom: 1px;
 		position: relative;
 		padding: 5px 10px;
 		align-items: center;
-		background-color: white;
+		background-color: var(--im-background);
 		white-space: nowrap;
-		color: black;
 		cursor: pointer;
 
 		&:hover {
-			background-color: #F8FAFF;
+			background-color: var(--im-background-active);
 		}
 
 		&.active {
-			background-color: #F4F9FF;
+			background-color: var(--im-background-active-dark);
 		}
 
 		.chat-left {
 			position: relative;
 			display: flex;
-			width: 45px;
-			height: 45x;
+      justify-content: center;
+      align-items: center;
 
 			.unread-text {
 				position: absolute;
 				background-color: #f56c6c;
-				right: -5px;
-				top: -5px;
+        right: -4px;
+        top: -8px;
 				color: white;
 				border-radius: 30px;
 				padding: 1px 5px;
@@ -159,29 +157,28 @@
 
 			.chat-name {
 				display: flex;
-				line-height: 25px;
-				height: 25px;
+				line-height: 20px;
+				height: 20px;
 
 				.chat-tag {
 					display: flex;
 					align-items: center;
 					justify-content: center;
-					margin-right: 1px;
+					margin-right: 4px;
 				}
 
 				.chat-name-text {
 					flex: 1;
-					font-size: 15px;
-					font-weight: 600;
+					font-size: var(--im-font-size);
 					white-space: nowrap;
 					overflow: hidden;
 				}
 
 
 				.chat-time-text {
-					font-size: 13px;
+					font-size: var(--im-font-size-smaller);
 					text-align: right;
-					color: #888888;
+					color: var(--im-text-color-light);
 					white-space: nowrap;
 					overflow: hidden;
 					padding-left: 10px;
@@ -194,11 +191,12 @@
 
 				.chat-at-text {
 					color: #c70b0b;
-					font-size: 12px;
+					font-size: var(--im-font-size-smaller);
 				}
 
 				.chat-send-name {
-					font-size: 13px;
+					font-size: var(--im-font-size-small);
+          color: var(--im-text-color-light);
 				}
 
 
@@ -207,7 +205,8 @@
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
-					font-size: 13px;
+					font-size: var(--im-font-size-small);
+          color: var(--im-text-color-light);
 
 					img {
 						width: 20px !important;

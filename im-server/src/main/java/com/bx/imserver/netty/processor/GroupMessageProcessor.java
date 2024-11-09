@@ -64,8 +64,8 @@ public class GroupMessageProcessor extends AbstractMessageProcessor<IMRecvInfo> 
             result.setCode(sendCode.code());
             result.setData(recvInfo.getData());
             // 推送到结果队列
-            String key = StrUtil.join(":",IMRedisKey.IM_RESULT_GROUP_QUEUE,recvInfo.getServiceName());
-            redisMQTemplate.opsForList().rightPush(key, result);
+            String key = StrUtil.join(":",IMRedisKey.IM_RESULT_GROUP_QUEUE, recvInfo.getServiceName());
+            redisMQTemplate.push(key, result);
         }
     }
 }

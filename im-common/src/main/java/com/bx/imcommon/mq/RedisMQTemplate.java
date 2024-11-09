@@ -5,6 +5,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -41,4 +42,23 @@ public class RedisMQTemplate extends RedisTemplate<String, Object> {
         return firVersion > 6 || (firVersion == 6 && secVersion >= 2);
     }
 
+    /**
+     * 推送消息
+     */
+    public void push(String key, Object data){
+        opsForList().rightPush(key, data);
+    }
+
+    /**
+     * 拉取消息
+     */
+    public Object pull(String key){
+        return opsForList().leftPop(key);
+    }
+    /**
+     * 批量拉取消息
+     */
+    public List<Object> pull(String key, Integer batchSize){
+        return opsForList().leftPop(key, batchSize);
+    }
 }
